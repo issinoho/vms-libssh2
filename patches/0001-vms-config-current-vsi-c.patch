@@ -1,0 +1,44 @@
+Subject: vms/libssh2_config.h: current VSI C, no zlib
+
+The VMS configuration dates from 2010 (HP C on Alpha).  VSI C's CRTL now
+declares ssize_t, uint32_t and socklen_t, so the typedefs are redefinitions;
+strtoll exists.  zlib (GNV's gnv$libzshr) is dropped: compression is optional
+in SSH, and without it programs that link libssh2 need nothing beyond SSL3.
+
+--- a/vms/libssh2_config.h	2024-10-16 09:03:21.000000000 +0100
++++ b/vms/libssh2_config.h	2026-10-25 09:47:02.653581643 +0000
+@@ -11,10 +11,8 @@
+ /* VMS specific libssh2_config.h
+  */
+ 
+-#define ssize_t SSIZE_T
+-
+-typedef unsigned int uint32_t;
+-typedef unsigned int socklen_t; /* missing in headers on VMS */
++/* VSI C's run-time library (V8.4-2 and later) declares ssize_t, uint32_t
++   and socklen_t itself; defining them again is an error. */
+ 
+ /* Have's */
+ 
+@@ -30,6 +28,7 @@
+ 
+ #define HAVE_GETTIMEOFDAY 1
+ #define HAVE_SNPRINTF 1
++#define HAVE_STRTOLL 1
+ 
+ #define POSIX_C_SOURCE
+ 
+@@ -79,11 +78,9 @@
+ /* Use OpenSSL */
+ #define LIBSSH2_OPENSSL 1
+ 
+-/* Compile in zlib support. We link against gnv$libzshr, as available
+- * from https://sourceforge.net/projects/vms-ports/files/.
++/* No zlib: SSH compression is optional and off by default, and leaving it
++ * out means a program linking libssh2 needs no zlib as well.
+  */
+ 
+-#define LIBSSH2_HAVE_ZLIB
+-
+ #endif /* __VMS */
+ #endif /* LIBSSH2_CONFIG_H */
