@@ -1,5 +1,10 @@
 # libssh2 for OpenVMS
 
+[![Release](https://img.shields.io/github/v/release/issinoho/vms-libssh2?label=release)](https://github.com/issinoho/vms-libssh2/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/issinoho/vms-libssh2/total?label=downloads)](https://github.com/issinoho/vms-libssh2/releases)
+![OpenVMS](https://img.shields.io/badge/OpenVMS-IA64%20%7C%20x86--64-blue)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue)](COPYING)
+
 [libssh2](https://libssh2.org) (**1.11.1**), the client-side SSH2 library, built natively for
 OpenVMS on **IA64** and **x86-64** with VSI C against VSI's **SSL3** kit (OpenSSL 3.0). It is
 an object library for static linking, made for [VFTP](https://github.com/issinoho/vms-vftp),
@@ -10,7 +15,8 @@ Like the family's other ports, this repository holds **only our changes**: every
 from the signed release tarball (Daniel Stenberg's key, pinned in `keys/`), applies
 `patches/` and adds `overlay/`.
 
-**Status: 1.11.1-vms1, PCSI kits built for both architectures, not yet released.**
+**Status: 1.11.1-vms1, released: PCSI kits for both architectures on the
+[releases page](https://github.com/issinoho/vms-libssh2/releases/latest).**
 
 | | IA64 (V8.4-2L3) | x86-64 (E9.2-4) |
 |---|---|---|
@@ -27,6 +33,9 @@ VMS sshd and to OpenSSH on Linux, and SCP to OpenSSH.
 
 ## Installing the kit
 
+A kit downloaded through a non-VMS system loses its record format. Restore it, then install:
+
+    $ SET FILE/ATTRIBUTE=(RFM:FIX,LRL:8192,MRS:8192,RAT:NONE) ISSINOHO-*-LIBSSH2-V0111-1E1-1.PCSI
     $ PRODUCT INSTALL LIBSSH2 /PRODUCER=ISSINOHO /SOURCE=dev:[dir]
 
 It installs `LIBSSH2$ROOT:[LIB]LIBSSH2.OLB` and `LIBSSH2.OPT`, the headers in
@@ -65,5 +74,5 @@ Ours: `vms/build.com` (the build), `vms/ssh2_smoke.c` (the smoke test) and `vms/
 
 ## Licence
 
-libssh2's BSD-3-Clause licence (`COPYING` in the source); our patches and VMS files are
+libssh2's BSD-3-Clause licence ([COPYING](COPYING), upstream's); our patches and VMS files are
 under the same terms.
