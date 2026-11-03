@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/banner.svg" alt="libssh2 for OpenVMS: a DECterm window compiling and linking a program against the kit, which completes an SSH handshake" width="100%">
+</p>
+
 # libssh2 for OpenVMS
 
 [![Release](https://img.shields.io/github/v/release/issinoho/vms-libssh2?label=release)](https://github.com/issinoho/vms-libssh2/releases/latest)
@@ -72,7 +76,15 @@ with `LINK prog,dev:[dir.INSTALL_<arch>.LIB]LIBSSH2/OPTIONS`.
 
 Ours: `vms/build.com` (the build), `vms/ssh2_smoke.c` (the smoke test) and `vms/kit/` (the PCSI kit).
 
+## Artwork
+
+`docs/images/banner.svg` and `docs/images/icon.svg` were made for this project in the style
+of classic DECwindows and VT terminals, like those of its sibling ports.
+
 ## Licence
 
 libssh2's BSD-3-Clause licence ([COPYING](COPYING), upstream's); our patches and VMS files are
 under the same terms.
+
+OpenVMS is a trademark of VMS Software, Inc. This project is not affiliated with VMS
+Software, Inc. or with the libssh2 project.
