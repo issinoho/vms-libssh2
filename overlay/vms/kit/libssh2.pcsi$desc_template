@@ -1,0 +1,32 @@
+--
+-- PCSI product description for libssh2 on OpenVMS.
+-- Template: tools/prepare.sh substitutes @PRODUCER@, @BASE@ and @PCSIVERSION@.
+--
+product @PRODUCER@ @BASE@ LIBSSH2 @PCSIVERSION@ full ;
+
+    information RELEASE_NOTES phase after ;
+
+    directory [LIBSSH2] ;
+    directory [LIBSSH2.DOC] ;
+    directory [LIBSSH2.INCLUDE] ;
+    directory [LIBSSH2.LIB] ;
+
+    file [LIBSSH2.LIB]LIBSSH2.OLB ;
+    file [LIBSSH2.LIB]LIBSSH2.OPT ;
+    file [LIBSSH2.INCLUDE]LIBSSH2.H ;
+    file [LIBSSH2.INCLUDE]LIBSSH2_SFTP.H ;
+    file [LIBSSH2.INCLUDE]LIBSSH2_PUBLICKEY.H ;
+    file [SYS$STARTUP]LIBSSH2$STARTUP.COM ;
+    file [LIBSSH2.DOC]README.VMS ;
+    file [LIBSSH2.DOC]COPYING. ;
+    file [LIBSSH2.DOC]RELEASE-NOTES. ;
+
+    -- Define LIBSSH2$ROOT now and print the post-installation tasks (PCSI shows
+    -- only the title of an information message unless /HELP is given).
+    execute postinstall "@PCSI$DESTINATION:[SYS$STARTUP]LIBSSH2$STARTUP.COM INSTALL" interactive ;
+    -- On removal, deassign LIBSSH2$ROOT.
+    execute install "CONTINUE" remove "@PCSI$DESTINATION:[SYS$STARTUP]LIBSSH2$STARTUP.COM REMOVE" ;
+
+    information POST_INSTALL phase after ;
+
+end product ;

@@ -1,0 +1,49 @@
+libssh2 for OpenVMS
+===================
+
+This is libssh2 @VERSION@, the client-side SSH2 library, built natively for
+OpenVMS @ARCH@ with VSI C against VSI's SSL3 kit (OpenSSL 3.0), from the
+unmodified release plus the patches in the vms-libssh2 project:
+
+    https://github.com/issinoho/vms-libssh2
+
+Kit version: @KITVERSION@.  libssh2 is free software under the BSD-3-Clause
+licence; see COPYING.  RELEASE-NOTES is upstream's for this release.
+
+What is installed
+-----------------
+    LIBSSH2$ROOT:[LIB]LIBSSH2.OLB     the object library, for static linking
+    LIBSSH2$ROOT:[LIB]LIBSSH2.OPT     link options: the library and SSL3's libcrypto
+    LIBSSH2$ROOT:[INCLUDE]LIBSSH2.H, LIBSSH2_SFTP.H, LIBSSH2_PUBLICKEY.H
+    LIBSSH2$ROOT:[DOC]                this file, COPYING, RELEASE-NOTES
+    SYS$STARTUP:LIBSSH2$STARTUP.COM   defines LIBSSH2$ROOT
+
+There is no shareable image and there are no commands: a program links the
+library into its own image, so it needs only SSL3 where it runs, not this kit.
+
+Setting up
+----------
+The kit installs LIBSSH2$STARTUP.COM into SYS$STARTUP and runs it once.  To
+define LIBSSH2$ROOT at every boot, the system manager adds this line to
+SYS$MANAGER:SYSTARTUP_VMS.COM:
+
+    $ @SYS$STARTUP:LIBSSH2$STARTUP.COM
+
+Building a program with it
+--------------------------
+    $ define/process OPENSSL SSL3$INCLUDE:
+    $ cc /names=(as_is,shortened) /pointer_size=32 -
+         /define=(_USE_STD_STAT=1,_LARGEFILE) -
+         /include=LIBSSH2$ROOT:[INCLUDE] prog.c
+    $ link prog,LIBSSH2$ROOT:[LIB]LIBSSH2/options
+
+The library is compiled so, and a program must match it:
+  - /NAMES=(AS_IS,SHORTENED): libssh2's names are mixed case, and some are
+    longer than 31 characters.
+  - /POINTER_SIZE=32 (or none): it uses SSL3's 32-bit libcrypto.
+  - _USE_STD_STAT and _LARGEFILE: libssh2_scp_recv2 fills a struct stat, and
+    without them a program's struct stat is smaller than libssh2's.
+SSL3 must be installed (SSL3$INCLUDE, SYS$SHARE:SSL3$LIBCRYPTO_SHR32).
+
+Not built: zlib compression (libssh2 offers none to the server), and the
+WinCNG, mbedTLS, wolfSSL and libgcrypt back ends.

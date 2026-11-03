@@ -1,0 +1,18 @@
+=product @PRODUCER@ @BASE@ LIBSSH2 @PCSIVERSION@ full
+1 'PRODUCER
+=prompt @PRODUCER@
+1 'PRODUCT
+=prompt libssh2 @VERSION@ for OpenVMS
+1 'NOTICE
+=prompt libssh2 is free software under the BSD-3-Clause licence; see COPYING.
+1 RELEASE_NOTES
+=prompt Documentation is in [LIBSSH2.DOC]README.VMS under the installation directory.
+1 POST_INSTALL
+=prompt Post-installation tasks for libssh2
+    At system startup: to define LIBSSH2$ROOT at every boot, add this line to
+    SYS$MANAGER:SYSTARTUP_VMS.COM:
+    $ @SYS$STARTUP:LIBSSH2$STARTUP.COM
+    To build with it: compile with /INCLUDE=LIBSSH2$ROOT:[INCLUDE] and
+    /NAMES=(AS_IS,SHORTENED), link with LIBSSH2$ROOT:[LIB]LIBSSH2/OPTIONS.
+
+PRODUCT REMOVE LIBSSH2 removes the product and deassigns LIBSSH2$ROOT.
