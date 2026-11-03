@@ -10,23 +10,44 @@ Like the family's other ports, this repository holds **only our changes**: every
 from the signed release tarball (Daniel Stenberg's key, pinned in `keys/`), applies
 `patches/` and adds `overlay/`.
 
-**Status: early, not released.**
+**Status: 1.11.1-vms1, PCSI kits built for both architectures, not yet released.**
 
 | | IA64 (V8.4-2L3) | x86-64 (E9.2-4) |
 |---|---|---|
 | Builds (VSI C, SSL3) | yes | yes |
 | Handshake, host key SHA-256, known_hosts check | yes | yes |
-| Public-key login (OpenSSH ed25519 key) | yes | yes |
-| SFTP list, write, read, remove | not yet tested | not yet tested |
+| Public-key and password login | yes | yes |
+| SFTP list, read, write, read and write at an offset, rename, setstat | yes, through VFTP | yes, through VFTP |
+| SCP send and receive | yes, through VFTP | yes, through VFTP |
+| The kit: install, a program built against it, remove | yes | yes |
 
 Negotiated with VSI OpenSSH 9.9 and GitHub: curve25519-sha256, ecdsa-sha2-nistp256 host
-keys, chacha20-poly1305@openssh.com.
+keys, chacha20-poly1305@openssh.com. VFTP's live tests (its docs/NOTES.md) cover SFTP to
+VMS sshd and to OpenSSH on Linux, and SCP to OpenSSH.
+
+## Installing the kit
+
+    $ PRODUCT INSTALL LIBSSH2 /PRODUCER=ISSINOHO /SOURCE=dev:[dir]
+
+It installs `LIBSSH2$ROOT:[LIB]LIBSSH2.OLB` and `LIBSSH2.OPT`, the headers in
+`LIBSSH2$ROOT:[INCLUDE]` and `SYS$STARTUP:LIBSSH2$STARTUP.COM` (add it to
+`SYSTARTUP_VMS.COM`). Build a program with
+
+    $ define/process OPENSSL SSL3$INCLUDE:
+    $ cc /names=(as_is,shortened) /define=(_USE_STD_STAT=1,_LARGEFILE) -
+         /include=LIBSSH2$ROOT:[INCLUDE] prog.c
+    $ link prog,LIBSSH2$ROOT:[LIB]LIBSSH2/options
+
+`_USE_STD_STAT` and `_LARGEFILE` must match the library's (libssh2_scp_recv2 fills a
+`struct stat`). The program needs only SSL3 where it runs: the library is linked in.
 
 ## Building
 
 ```sh
 tools/prepare.sh            # fetch, verify, patch, stage
 tools/build.sh x86          # or ia64
+tools/kit.sh x86            # the PCSI kit, to out/kits/
+tools/installcheck.sh x86   # install, smoke-test, remove (changes the system)
 ```
 
 On the node the result is `[.INSTALL_<arch>.LIB]LIBSSH2.OLB` with `LIBSSH2.OPT` (the
@@ -40,7 +61,7 @@ with `LINK prog,dev:[dir.INSTALL_<arch>.LIB]LIBSSH2/OPTIONS`.
 |---|---|
 | 0001 | `vms/libssh2_config.h`: drop typedefs VSI C now has (`uint32_t`, `socklen_t`, `ssize_t`), add `HAVE_STRTOLL`, no zlib |
 
-Ours: `vms/build.com` (the build) and `vms/ssh2_smoke.c` (the smoke test).
+Ours: `vms/build.com` (the build), `vms/ssh2_smoke.c` (the smoke test) and `vms/kit/` (the PCSI kit).
 
 ## Licence
 
