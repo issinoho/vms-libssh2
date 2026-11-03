@@ -4,6 +4,7 @@ $! handshake against this node's sshd on <port>, then remove the kit.  Changes t
 $! system while it runs (PCSI database, SYS$COMMON:[LIBSSH2], system logical
 $! LIBSSH2$ROOT); leaves it as it was.
 $ set noon
+$ old_privs = f$setprv("SYSPRV,SYSNAM,CMKRNL,BYPASS")
 $ arch = f$edit(f$getsyi("ARCH_NAME"), "UPCASE")
 $ base = "I64VMS"
 $ if arch .eqs. "X86_64" then base = "X86VMS"
@@ -28,8 +29,9 @@ $ write sys$output "=== SMOKE TEST built against the installed kit"
 $ scratch = tree - "]" + ".INSTALLCHECK]"
 $ if f$search(tree - "]" + "]INSTALLCHECK.DIR") .eqs. "" then create/directory 'scratch'
 $ define/process OPENSSL SSL3$INCLUDE:
+$ src = tree - "]" + ".VMS]SSH2_SMOKE.C"
 $ cc/names=(as_is,shortened)/pointer_size=32/define=(_USE_STD_STAT=1,_LARGEFILE) -
-     /include=LIBSSH2$ROOT:[INCLUDE] /object='scratch'SSH2_SMOKE.OBJ 'tree'[.VMS]SSH2_SMOKE.C
+     /include=LIBSSH2$ROOT:[INCLUDE] /object='scratch'SSH2_SMOKE.OBJ 'src'
 $ write sys$output "SMOKE: cc status ", $status
 $ link/executable='scratch'SSH2_SMOKE.EXE 'scratch'SSH2_SMOKE.OBJ,LIBSSH2$ROOT:[LIB]LIBSSH2/options
 $ write sys$output "SMOKE: link status ", $status
@@ -47,3 +49,5 @@ $ write sys$output "LIBSSH2$ROOT after removal: [", f$trnlnm("LIBSSH2$ROOT"), "]
 $ write sys$output "files after removal: [", f$search("SYS$COMMON:[LIBSSH2...]*.*"), "]"
 $ write sys$output "startup after removal: [", f$search("SYS$STARTUP:LIBSSH2$STARTUP.COM"), "]"
 $ product show product LIBSSH2 /producer=ISSINOHO
+$ dummy = f$setprv(old_privs)
+$ exit 1
